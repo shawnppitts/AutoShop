@@ -17,13 +17,13 @@ Auto Shop is made up of 4 individual microservices written in python using the f
 5. Fork repository and clone onto your machine
 
 ### What next?
-1. You will need to store your mongodb username, password, and cluster in the OrderManagement, ProductManagement, and NotificationGateway services src file
+1. You will need to store your mongodb username, password, and cluster in the OrderManagement, ProductManagement, and NotificationGateway {service}/src/.env file
 ```
 MONGO_USERNAME=
 MONGO_PASSWORD=
 MONGO_CLUSTER=
 ```
-2. You will need to store your Mailjet API Key and Session in your NotificationGateway src file
+2. You will need to store your Mailjet API Key and Session in your NotificationGateway {service}/src/.env file
 ```
 MAILJET_API_KEY=
 MAILJET_API_SECRET=
@@ -44,6 +44,12 @@ pip install -r requirements.txt
 python3 app.py
 ```
 7. Open PortalService in https://127.0.0.1:5001
+
+## Running GitActions:
+In the forked repository, you will need to:
+1. Add DOCKER_USERNAME, and DOCKER_PASSWORD to your Settings > Secrets & Variables > Actions.
+2. With a push to the main branch, git actions will trigger CI/CD Pipeline to build docker images
+3. Script can be found in .github/workflows/automation.yaml
 
 ## Running in Kubernetes:
 The below will create the namespace **app** with the deployments and services needed to run the application
