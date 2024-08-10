@@ -17,21 +17,33 @@ Auto Shop is made up of 4 individual microservices written in python using the f
 5. Fork repository and clone onto your machine
 
 ### What next?
-1. Create a virtualenv in the root of the project then activate it
+1. You will need to store your mongodb username, password, and cluster in the OrderManagement, ProductManagement, and NotificationGateway services src file
+```
+MONGO_USERNAME=
+MONGO_PASSWORD=
+MONGO_CLUSTER=
+```
+2. You will need to store your Mailjet API Key and Session in your NotificationGateway src file
+```
+MAILJET_API_KEY=
+MAILJET_API_SECRET=
+MAILJET_SENDER_MAIL=
+```
+3. Create a virtualenv in the root of the project then activate it
 ```
 python3 -m venv venv
 source venv/bin/activate
 ```
-2. In order to successfully run each microservice, you will need to open 4 terminal windows
-3. cd into each service and run the following. This will install the required dependencies each service needs into your virtual environment
+4. In order to successfully run each microservice, you will need to open 4 terminal windows
+5. cd into each service and run the following. This will install the required dependencies each service needs into your virtual environment
 ```
 pip install -r requirements.txt
 ```
-4. run each service with the following
+6. run each service with the following
 ```
 python3 app.py
 ```
-5. Open PortalService in https://127.0.0.1:5001
+7. Open PortalService in https://127.0.0.1:5001
 
 ## Running in Kubernetes:
 The below will create the namespace **app** with the deployments and services needed to run the application
