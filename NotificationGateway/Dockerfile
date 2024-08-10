@@ -1,0 +1,20 @@
+FROM python:3.8-slim-buster
+
+WORKDIR /notification
+
+COPY requirements.txt requirements.txt
+RUN pip3 install -r requirements.txt
+
+ENV MAILJET_API_KEY=${MAILJET_API_KEY}
+ENV MAILJET_API_SECRET=${MAILJET_API_SECRET}
+ENV MAILJET_SENDER_MAIL=${MAILJET_SENDER_MAIL}
+
+ENV MONGO_USERNAME=${MONGO_USERNAME}
+ENV MONGO_PASSWORD=${MONGO_PASSWORD}
+ENV MONGO_CLUSTER=${MONGO_CLUSTER}
+
+COPY . .
+
+CMD [ "opentelemetry-instrument", "python3", "app.py" ]
+
+EXPOSE 5004
