@@ -7,33 +7,15 @@ from dotenv import load_dotenv
 from pymongo.mongo_client import MongoClient
 from flask import Flask, request
 from flask_restx import Api, Resource, fields
-from prometheus_client import make_wsgi_app, Gauge, Counter, Histogram
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
 app = Flask(__name__)
 
-# For promtheus exporting
-app.wsgi_app = DispatcherMiddleware(app.wsgi_app, {
-    '/metrics': make_wsgi_app()
-})
-
-totalcost_counter = Counter(
-    'autoshop_total_spend',
-    'Autoshop Total spend across orders',
-    ['method', 'endpoint', 'status']
-)
-
-request_counter = Counter(
-    'autoshop_request_count',
-    'Autoshop Request Count',
-    ['method', 'endpoint', 'status']
-)
-
-
 env_path = "./src/.env"
 load_dotenv(env_path)
-MONGO_PASSWORD = os.environ.get("MONGO_PASSWORD")
-MONGO_CLUSTER = os.environ.get("MONGO_CLUSTER")
+
+MONGO_PASSWORD = os.environ.get("MONGO_PASSWORD") or os.getenv("MONGO_PASSWORD")
+MONGO_CLUSTER = os.environ.get("MONGO_CLUSTER") or os.getenv("MONGO_CLUSTER")
 
 api = Api(app)
 order_ns = api.namespace("api/v1/orders", "CRUD operations for Orders")
@@ -88,16 +70,10 @@ class Orders(Resource):
     @order_ns.expect(orderInsert, validate=True)
     @order_ns.marshal_with(order)
     def post(self):
-        # Telemetry data initialization        
-        request_counter.labels('POST', '/submitOrder', 200).inc(1)
-        payload = {}
         db = client["db_om"]
         collection = db["orders"]
         
         data = request.json
-        payload["message"] = "Data pulled from /submitOrder"
-        payload["details"] = data
-        payload = {}
         data["id"] = uuid.uuid4().__str__()
         data["submittedAt"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         orderId = uuid.uuid4().__str__()
@@ -107,8 +83,6 @@ class Orders(Resource):
         for cost in data["orderItems"]:
             totalCost += (cost["price"] * cost["quantity"]) + (cost["price"] * (cost["tax"])/100) * cost["quantity"]
         data["totalCost"] = totalCost            
-        totalcost_counter.labels('POST', '/submitOrder', 200).inc(totalCost)
-
         collection.insert_one(data)
         # SENDS EMAIL AFTER ORDER CREATED
         requestData={}
@@ -130,15 +104,11 @@ class ProductId(Resource):
     )
     def get(self, orderId):
         try:
-            payload = {}
             db = client["db_om"]
             collection = db["orders"]
             
             order_body = {}
             order = collection.find_one({'id': orderId})
-            payload["message"] = f"Found order with id: {orderId}"
-            payload["request_path"] = "/orderId"
-            payload["method"] = "GET"
 
             order_body["orderItems"] = order["orderItems"]
             order_body["contact"] = order["contact"]
@@ -146,8 +116,6 @@ class ProductId(Resource):
             order["submittedAt"] = order["submittedAt"]
             order_body["totalCost"] = order["totalCost"]
 
-            payload["details"] = order_body
-            payload["status"] = 200
             return order_body, 200
         except Exception as e:
             return f"Unexpected error: {e}", 500

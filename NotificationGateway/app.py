@@ -11,11 +11,13 @@ app = Flask(__name__)
 
 env_path = "./src/.env"
 load_dotenv(env_path)
-MONGO_PASSWORD = os.environ.get("MONGO_PASSWORD")
-MONGO_CLUSTER = os.environ.get("MONGO_CLUSTER")
+MONGO_PASSWORD = os.environ.get("MONGO_PASSWORD") or os.getenv("MONGO_PASSWORD")
+MONGO_CLUSTER = os.environ.get("MONGO_CLUSTER") or os.getenv("MONGO_CLUSTER")
+senderMail = os.getenv("MAILJET_SENDER_MAIL") or os.getenv("MAILJET_SENDER_MAIL")
+MAILJET_API_KEY = os.getenv("MAILJET_API_KEY") or os.getenv("MAILJET_API_KEY")
+MAILJET_API_SECRET = os.getenv("MAILJET_API_SECRET") or os.getenv("MAILJET_API_SECRET")
 
-senderMail = os.getenv("MAILJET_SENDER_MAIL")
-mailjet = Client(auth=(os.getenv("MAILJET_API_KEY"), os.getenv("MAILJET_API_SECRET")), version='v3.1')
+mailjet = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version='v3.1')
 api = Api(app)
 
 product_ns = api.namespace("api/v1/email", "Send Email")
@@ -53,7 +55,6 @@ class Email(Resource):
     @product_ns.expect(emailInsert, validate=True)
     @product_ns.marshal_with(emailResponse)
     def post(self):
-        log = {}
         db = client["db_ng"]
         collection = db["emails"]
         
@@ -80,16 +81,10 @@ class Email(Resource):
         response = {}
         rep = mailjet.send.create(data=data)
         name = reqData["name"]
-        log["request_path"] = "/sendMail"
-        log["method"] = "POST"
         if rep.status_code==200:
-            log["status"] = 200
-            log["message"] = f"successfully sent mail to {name}"
             response["status"] = "SUCCESS"
             response["deliveredAt"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         else:
-            log["status"] = 404
-            log["message"] = f"Failure to send mail to {name}"
             response["status"] = "FAILURE"
             response["deliveredAt"] = None
 
@@ -99,8 +94,6 @@ class Email(Resource):
         response["orderId"] = reqData["orderId"]
         response["statusCode"] = rep.status_code
         try :
-            print(data)
-            print(response)
             collection.insert_one(data)
             return response, 202
         except Exception as e:
@@ -108,18 +101,14 @@ class Email(Resource):
 
     def get(self):
         try:
-            log = {}
             db = client["db_ng"]
             collection = db["emails"]
 
-            log["method"] = "GET"
-            log["message"] = "Fetching mail"
             products = []
             
             for doc in collection.find({}):
                 doc["_id"] = str(doc["_id"])
                 products.append(doc)
-            log["details"] = "products"
             return products, 200
         except Exception as e:
             return f"Unexpected error: {e}", 500

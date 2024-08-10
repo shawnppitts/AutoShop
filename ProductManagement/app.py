@@ -10,8 +10,8 @@ app = Flask(__name__)
 
 env_path = "./src/.env"
 load_dotenv(env_path)
-MONGO_PASSWORD = os.environ.get("MONGO_PASSWORD")
-MONGO_CLUSTER = os.environ.get("MONGO_CLUSTER")
+MONGO_PASSWORD = os.environ.get("MONGO_PASSWORD") or os.getenv("MONGO_PASSWORD")
+MONGO_CLUSTER = os.environ.get("MONGO_CLUSTER") or os.getenv("MONGO_CLUSTER")
 
 api = Api(app)
 product_ns = api.namespace("api/v1/products", "CRUD operations for Product")
@@ -107,7 +107,7 @@ class ProductId(Resource):
             return f"Unexpected error: {e}", 500
 
 uri = f"mongodb+srv://admin:{MONGO_PASSWORD}@{MONGO_CLUSTER}/?retryWrites=true&w=majority"
-
+print(uri)
         # Create a new client and connect to the server
 client = MongoClient(uri)
 try:
