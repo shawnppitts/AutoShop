@@ -1,14 +1,37 @@
 # Auto Shop
-Auto Shop app is made up of 4 microservices written in python using the flask framework:
+Auto Shop is made up of 4 individual microservices written in python using the flask framework: Attached below is the architectural breakdown. 
 
-![Example Image](static/architecture.gif)
+![Architecture](static/architecture.gif)
 
-- PortalService: The frontend of application storefront
-- ProductManagement: Renders products in which we can purchase
-- OrderManagement: Communicates with Mongo Database to provide productId upon purchase
-- NotificationGateway: Uses Mailjet to send email when purchase is made
+- PortalService: The frontend of application storefront allowing you to view order or purchase items
+- ProductManagement: Flask API communicating with MongoDB Atlas to fetch all and individual products.
+- OrderManagement: Flask API communicating with MongoDB Atlas to store purchased orders and generate orderId upon purchase
+- NotificationGateway: Flask API built using Mailjet to send email when purchase is made
 
-![image](https://github.com/shawnppitts/TheAutoShop/assets/13418953/988535ba-01f2-4f96-973c-b80e93c4a69e)
+## How do I run the Autoshop?
+### Prerequisites:
+1. Create Free MongoDB Atlas Account: https://www.mongodb.com/cloud/atlas/register
+2. Create MongoDB Cluster: https://www.mongodb.com/docs/guides/atlas/cluster/
+3. Create Free MailJet Account: https://app.mailjet.com/signup?lang=en_US
+4. Python 3 Installed: https://www.python.org/downloads/
+5. Fork repository and clone onto your machine
+
+### What next?
+1. Create a virtualenv in the root of the project then activate it
+```
+python3 -m venv venv
+source venv/bin/activate
+```
+2. In order to successfully run each microservice, you will need to open 4 terminal windows
+3. cd into each service and run the following. This will install the required dependencies each service needs into your virtual environment
+```
+pip install -r requirements.txt
+```
+4. run each service with the following
+```
+python3 app.py
+```
+5. Open PortalService in https://127.0.0.1:5001
 
 ## Running in Kubernetes:
 The below will create the namespace **app** with the deployments and services needed to run the application
