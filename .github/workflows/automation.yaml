@@ -1,0 +1,50 @@
+name: Dockerize Autoshop Flask Applications
+on: 
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+jobs:
+  build-container:
+    name: Build Docker container image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@f95db51fddba0c2d1ec667646a06c2ce06100226
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Push PortalService Docker Image
+        working-directory: ./PortalService
+        run: |
+          docker build -t portal .
+          docker tag portal shawnppitts/portal
+          docker push shawnppitts/portal:latest
+
+      - name: Push ProductManagement Docker Image
+        working-directory: ./ProductManagement
+        run: |
+          docker build -t product .
+          docker tag product shawnppitts/product
+          docker push shawnppitts/product:latest
+
+      - name: Push OrderManagement Docker Image
+        working-directory: ./OrderManagement
+        run: |
+          docker build -t orders .
+          docker tag orders shawnppitts/orders
+          docker push shawnppitts/orders:latest
+      
+      - name: Push NotificationGateway Docker Image
+        working-directory: ./NotificationGateway
+        run: |
+          docker build -t notification .
+          docker tag notification shawnppitts/notification
+          docker push shawnppitts/notification:latest                              
