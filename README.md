@@ -1,5 +1,5 @@
 # Auto Shop
-Auto Shop application is made up of 4 microservices written in python using the flask framework:
+Auto Shop app is made up of 4 microservices written in python using the flask framework:
 
 - PortalService: The frontend of application storefront
 - ProductManagement: Renders products in which we can purchase
