@@ -21,6 +21,7 @@ OM_GETORDER_URL = os.getenv("OM_GETORDER_URL")
 @app.route('/')
 @app.route('/home')
 def home():
+    print("added log")
     return render_template('home.html')
  
 @app.route('/order',methods=['GET','POST'])
