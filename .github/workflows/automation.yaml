@@ -12,7 +12,7 @@ on:
 
 jobs:
   build-portal:
-    if: contains(github.event.head_commit.message, 'PortalService') || contains(github.event.commits.*.modified, 'PortalService/')
+    if: contains(github.event.head_commit.message, 'portal') || contains(github.event.commits.*.modified, 'PortalService/')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -35,7 +35,7 @@ jobs:
           docker push shawnppitts/portal:latest
 
   build-product:
-    if: contains(github.event.head_commit.message, 'ProductManagement') || contains(github.event.commits.*.modified, 'ProductManagement/')
+    if: contains(github.event.head_commit.message, 'product') || contains(github.event.commits.*.modified, 'ProductManagement/')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -58,7 +58,7 @@ jobs:
           docker push shawnppitts/product:latest          
 
   build-order:
-    if: contains(github.event.head_commit.message, 'OrderManagement') || contains(github.event.commits.*.modified, 'OrderManagement/')
+    if: contains(github.event.head_commit.message, 'order') || contains(github.event.commits.*.modified, 'OrderManagement/')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -82,7 +82,7 @@ jobs:
 
 
   build-notify:
-    if: contains(github.event.head_commit.message, 'NotificationGateway') || contains(github.event.commits.*.modified, 'NotificationGateway/')
+    if: contains(github.event.head_commit.message, 'notification-gw') || contains(github.event.commits.*.modified, 'NotificationGateway/')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
