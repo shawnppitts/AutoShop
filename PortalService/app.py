@@ -10,6 +10,14 @@ app = Flask(__name__)
 env_path = "./src/.env"
 load_dotenv(env_path)
 
+PM_BASEURL = os.getenv("PM_BASEURL")
+PM_PORT = os.getenv("PM_PORT")
+PM_GETPRODUCT_URL = os.getenv("PM_GETPRODUCT_URL")
+OM_BASEURL = os.getenv("OM_BASEURL")
+OM_PORT = os.getenv("OM_PORT")
+OM_SUBMITORDER_URL = os.getenv("OM_SUBMITORDER_URL")
+OM_GETORDER_URL = os.getenv("OM_GETORDER_URL")
+
 @app.route('/')
 @app.route('/home')
 def home():
@@ -17,7 +25,7 @@ def home():
  
 @app.route('/order',methods=['GET','POST'])
 def order():
-    url = "http://" + os.getenv("PM_BASEURL") + ":" + os.getenv("PM_PORT") + os.getenv("PM_GETPRODUCT_URL")
+    url = f"http://{PM_BASEURL}:{PM_PORT}{PM_GETPRODUCT_URL}"
     response = requests.get(url).json()
 
     product_count = len(response)    
@@ -45,7 +53,7 @@ def order():
         data["contact"] = contact
 
 
-        url = "http://" + os.getenv("OM_BASEURL") + ":" + os.getenv("OM_PORT") + os.getenv("OM_SUBMITORDER_URL")
+        url = f"http://{OM_BASEURL}:{OM_PORT}{OM_SUBMITORDER_URL}"
 
         response = requests.post(url, json=data)
         json_response = response.json()
@@ -59,7 +67,7 @@ def order():
 def viewOrder():
     if request.method == 'POST':
         orderId = request.form['orderId']        
-        url = "http://" + os.getenv("OM_BASEURL") + ":" + os.getenv("OM_PORT") + os.getenv("OM_GETORDER_URL") + orderId
+        url = "http://{OM_BASEURL}:{OM_PORT}{OM_GETORDER_URL}{orderId}"
         
         try:
             response = requests.get(url).json()

@@ -1,22 +1,28 @@
-name: Dockerize Autoshop Flask Applications
-on: 
+name: Build Docker Container
+
+on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    branches:
+      - main
+    paths:
+      - 'PortalService/**'
+      - 'ProductManagement/**'
+      - 'OrderManagement/**'
+      - 'NotificationGateway/**'
+
 jobs:
-  build-container:
-    name: Build Docker container image
+  build-portal:
+    if: contains(github.event.head_commit.message, 'PortalService') || contains(github.event.commits.*.modified, 'PortalService/')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      
-      - name: Setup Docker Buildx
-        uses: docker/setup-buildx-action@f95db51fddba0c2d1ec667646a06c2ce06100226
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
@@ -28,23 +34,72 @@ jobs:
           docker tag portal shawnppitts/portal
           docker push shawnppitts/portal:latest
 
+  build-product:
+    if: contains(github.event.head_commit.message, 'ProductManagement') || contains(github.event.commits.*.modified, 'ProductManagement/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
       - name: Push ProductManagement Docker Image
         working-directory: ./ProductManagement
         run: |
           docker build -t product .
           docker tag product shawnppitts/product
-          docker push shawnppitts/product:latest
+          docker push shawnppitts/product:latest          
+
+  build-order:
+    if: contains(github.event.head_commit.message, 'OrderManagement') || contains(github.event.commits.*.modified, 'OrderManagement/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Push OrderManagement Docker Image
         working-directory: ./OrderManagement
         run: |
-          docker build -t orders .
-          docker tag orders shawnppitts/orders
+          docker build -t portal .
+          docker tag portal shawnppitts/orders
           docker push shawnppitts/orders:latest
-      
+
+
+  build-notify:
+    if: contains(github.event.head_commit.message, 'NotificationGateway') || contains(github.event.commits.*.modified, 'NotificationGateway/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
       - name: Push NotificationGateway Docker Image
         working-directory: ./NotificationGateway
         run: |
           docker build -t notification .
           docker tag notification shawnppitts/notification
-          docker push shawnppitts/notification:latest                              
+          docker push shawnppitts/notification:latest
