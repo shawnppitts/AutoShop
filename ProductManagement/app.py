@@ -85,6 +85,7 @@ class Products(Resource):
             for doc in collection.find({}):
                 doc["_id"] = str(doc["_id"])
                 products.append(doc)
+            print(products)
             return products, 200
         except Exception as e:
             return f"Unexpected error: {e}", 500
