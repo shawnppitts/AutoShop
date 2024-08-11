@@ -72,7 +72,7 @@ class Email(Resource):
                                 "Name": reqData["name"]
                             }
                         ],
-                        "Subject": "Order Confirmation from Auto Shop",
+                        "Subject": "Thank you for shopping at the Auto Shop",
                         "TextPart": f"Your Order {reqData['orderId']} successfully placed !",
                         "HTMLPart": f"<h3>Dear {reqData['name']},<br/>Your order {reqData['orderId']} is successfully placed and the total amount of the order is {reqData['totalCost']} . Thank you for shopping with The Auto Shop!"
                     }
