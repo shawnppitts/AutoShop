@@ -70,7 +70,7 @@ class Products(Resource):
 
     @product_ns.doc(
         "Find Products",
-        reponses={200: "found", 500: "Unexpected Error"},
+        reponses={200: "success", 500: "Unexpected Error"},
         params={
             "status": "Product is ACTIVE/INACTIVE"
         },
